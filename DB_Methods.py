@@ -1,4 +1,5 @@
 import sqlite3
+import hashlib
 
 
 def enter_hash():

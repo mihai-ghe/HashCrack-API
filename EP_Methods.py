@@ -1,6 +1,11 @@
 from flask import request
+import hashlib
 
 
-def receive_hashes():
+def receive_hashes(hash):
 
-    return 1
+    return 'received hash'
+
+def check_creds():
+
+    return 'checked credentials'
