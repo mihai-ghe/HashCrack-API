@@ -1,15 +1,13 @@
 import sqlite3
-import Hash
-import secrets
 
 
-def enter_hash(hash_obj):
+def enter_hash(hash_value, hash_type, user_id):
 
     db_connection = None
 
-    query = "INSERT INTO Hashes (Hash, Type) VALUES (%s, %s);"
+    query = "INSERT INTO Hashes (Hash, Type, User_ID) VALUES (?, ?, ?);"
 
-    values = (hash_obj.value, hash_obj.form)
+    values = (hash_value, hash_type, user_id)
 
     try:
 
@@ -18,11 +16,12 @@ def enter_hash(hash_obj):
         cursor = db_connection.cursor()
 
         # Enter Hash information in DB
-        cursor.execute(query)
+        cursor.execute(query, values)
 
         # Fetch result and print it
         result = cursor.fetchall()
-        print('SQL Response is {}'.format(result))
+        db_connection.commit()
+        # print('SQL Response is {}'.format(result))
 
     # Handle Errors
     except sqlite3.Error as Error:
@@ -40,9 +39,7 @@ def check_hash(value):
 
     db_connection = None
 
-    query = "SELECT * FROM Hashes WHERE Hash = %s;"
-
-    values = (value)
+    query = "SELECT * FROM Hashes WHERE Hash = %s;" % value
 
     try:
 
@@ -69,23 +66,13 @@ def check_hash(value):
             db_connection.close()
 
 
-# Add a new user to the DB
-def add_user(username):
-
-    # Note: Before adding new users check the user related to the current API Key
-    # Only the admin should have the ability to add new Users
-
-    new_api_key = secrets.token_urlsafe(32)
-
-    print(f"The new user's API Key is: {new_api_key}\n"
-          f"Save it somewhere secure, as you will need to use"
-          f"it whenever you make a request to the API")
+def check_key(api_key):
 
     db_connection = None
 
-    query = "INSERT INTO Users (UserName, API_Key) VALUES (%s, %s);"
+    result = None
 
-    values = (username, new_api_key)
+    query = f"SELECT * FROM Users WHERE API_Key = '{api_key}'"
 
     try:
 
@@ -98,9 +85,8 @@ def add_user(username):
 
         # Fetch result and print it
         result = cursor.fetchall()
-        print('SQL Response is {}'.format(result))
 
-    except sqlite3.Error() as Error:
+    except sqlite3.Error as Error:
 
         print('Error Occurred -', Error)
 
@@ -108,3 +94,51 @@ def add_user(username):
 
         if db_connection:
             db_connection.close()
+
+    # print(result)
+
+    if result:
+        return result
+    else:
+        return None
+
+
+# Add a new user to the DB
+def add_user(username, key):
+
+    # Note: Before adding new users check the user related to the current API Key
+    # Only the admin should have the ability to add new Users
+
+    rvalue = 0
+
+    db_connection = None
+
+    query = "INSERT INTO Users(UserName, API_Key) VALUES(?, ?);"
+
+    values = (username, key)
+
+    try:
+
+        # Connect to the DB
+        db_connection = sqlite3.connect('./DB/FlaskApp_DB.db')
+        cursor = db_connection.cursor()
+
+        # Add User to the DB
+        cursor.execute(query, values)
+        db_connection.commit()
+
+        # Fetch result and print it
+        result = cursor.fetchall()
+        print('SQL Response is {}'.format(result))
+
+    except sqlite3.Error as Error:
+
+        print('Error Occurred -', Error)
+        rvalue = 1
+
+    finally:
+
+        if db_connection:
+            db_connection.close()
+
+    return rvalue

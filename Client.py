@@ -2,17 +2,19 @@ import requests
 
 
 # Send hash to DB and start cracking
-def send_hash(value, form):
+def send_hash(value, form, auth):
 
     url = "http://localhost:5000/send"
 
     json = {'hash': value, 'format': form}
 
+    headers = {'Authorization': 'Bearer ' + auth}
+
     response = None
 
     try:
 
-        response = requests.post(url, json=json)
+        response = requests.post(url, json=json, headers=headers)
 
     except requests.ConnectionError as Error:
 
