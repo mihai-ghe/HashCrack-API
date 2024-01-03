@@ -35,11 +35,20 @@ def enter_hash(hash_value, hash_type, user_id):
             db_connection.close()
 
 
-def check_hash(value):
+def check_hash(value=None, hash_id=None, user_id=None):
 
     db_connection = None
 
-    query = "SELECT * FROM Hashes WHERE Hash = %s;" % value
+    if value:
+        query = f"SELECT * FROM Hashes WHERE Hash = '{value}';"
+    elif hash_id:
+        query = f"SELECT * FROM Hashes WHERE ID = {hash_id};"
+    elif user_id:
+        query = f"SELECT * FROM Hashes WHERE User_ID = {user_id};"
+    else:
+        raise Exception('No argument provided. Please provide a hash value or a hash id')
+
+    result = None
 
     try:
 
@@ -52,7 +61,6 @@ def check_hash(value):
 
         # Fetch result and print it
         result = cursor.fetchall()
-        print('SQL Response is {}'.format(result))
 
     # Handle Errors
     except sqlite3.Error as Error:
@@ -64,6 +72,8 @@ def check_hash(value):
 
         if db_connection:
             db_connection.close()
+
+    return result
 
 
 def check_key(api_key):
@@ -142,3 +152,77 @@ def add_user(username, key):
             db_connection.close()
 
     return rvalue
+
+
+def get_all():
+
+    result = None
+
+    db_connection = None
+
+    query = "SELECT * FROM HASHES;"
+
+    try:
+
+        # Connect to the DB
+        db_connection = sqlite3.connect('./DB/FlaskApp_DB.db')
+        cursor = db_connection.cursor()
+
+        # Enter Hash information in DB
+        cursor.execute(query)
+
+        # Fetch result and print it
+        result = cursor.fetchall()
+        db_connection.commit()
+        # print('SQL Response is {}'.format(result))
+
+    # Handle Errors
+    except sqlite3.Error as Error:
+
+        print('Error Occurred -', Error)
+
+    # Close DB
+    finally:
+
+        if db_connection:
+            db_connection.close()
+
+    return result
+
+
+def update_hash_data(field_name, value, hash_id):
+
+    result = None
+
+    db_connection = None
+
+    query = f"UPDATE Hashes SET {field_name} = '{value}' WHERE ID = {hash_id};"
+
+    # values = (field_name, value, hash_id)
+
+    try:
+
+        # Connect to the DB
+        db_connection = sqlite3.connect('./DB/FlaskApp_DB.db')
+        cursor = db_connection.cursor()
+
+        # Enter Hash information in DB
+        cursor.execute(query)
+
+        # Fetch result and print it
+        result = cursor.fetchall()
+        db_connection.commit()
+        # print('SQL Response is {}'.format(result))
+
+    # Handle Errors
+    except sqlite3.Error as Error:
+
+        print('Error Occurred -', Error)
+
+    # Close DB
+    finally:
+
+        if db_connection:
+            db_connection.close()
+
+    return result

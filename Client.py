@@ -1,93 +1,94 @@
-import requests
+import Client_Requests
 
 
-# Send hash to DB and start cracking
-def send_hash(value, form, auth):
+def client_screen():
 
-    url = "http://localhost:5000/send"
+    print("\n")
+    print("----------CRACKSTATION CLIENT----------")
+    key = input("Enter your API Key: ")
 
-    json = {'hash': value, 'format': form}
+    while True:
 
-    headers = {'Authorization': 'Bearer ' + auth}
+        print("Select what you would like to do:")
+        print("1. Add a hash")
+        print("2. Check to see if a hash exists")
+        print("3. Get a file containing all hashes")
+        print("4. Start the Cracking Process for a specific hash")
+        print("5. Get the status of a/all hashes")
+        print("6. Stop the Cracking Process for a specific hash")
+        print("7. Exit")
 
-    response = None
+        choice = int(input("Your Choice: "))
 
-    try:
-
-        response = requests.post(url, json=json, headers=headers)
-
-    except requests.ConnectionError as Error:
-
-        print("Could not connect to host:", Error)
-        exit()
-
-    finally:
-        if response:
-            print(response)
-
-
-# Get progress of current cracking threads
-def cracking_status():
-
-    url = "http://localhost:5000/status"
-
-    response = None
-
-    try:
-
-        response = requests.get(url)
-
-    except requests.ConnectionError as Error:
-
-        print("Could not connect to host:", Error)
-        exit()
-
-    finally:
-        if response:
-            print(response)
+        if choice == 1:
+            add_hash(key)
+            continue
+        elif choice == 2:
+            check_hash(key)
+            continue
+        elif choice == 3:
+            get_all(key)
+            continue
+        elif choice == 4:
+            start(key)
+            continue
+        elif choice == 5:
+            status(key)
+            continue
+        elif choice == 6:
+            stop(key)
+            continue
+        elif choice == 7:
+            print("Exiting...")
+            break
 
 
-# Check if hash has entry in DB
-def check(value):
+def add_hash(auth):
 
-    url = "http://localhost:5000/check"
+    hash_value = input("Enter the hash: ")
+    hash_form = input("Enter the hash format: ")
 
-    params = {'hash':  value}
-
-    response = None
-
-    try:
-
-        response = requests.get(url, params=params)
-
-    except requests.ConnectionError as Error:
-
-        print("Could not connect to host:", Error)
-        exit()
-
-    finally:
-        if response:
-            print(response)
+    Client_Requests.send_hash(hash_value, hash_form, auth)
 
 
-# Terminate a cracking thread
-def end(thread_id):
+def check_hash(auth):
 
-    url = "http://localhost:5000/end"
+    hash_value = input("Enter the hash: ")
 
-    params = {'id': thread_id}
+    Client_Requests.check(hash_value, auth)
 
-    response = None
 
-    try:
+def get_all(auth):
 
-        response = requests.put(url, params=params)
+    file_format = input("Enter the file format for the hash file: ")
 
-    except requests.ConnectionError as Error:
+    if file_format == 'csv':
+        Client_Requests.get_all('csv', auth)
+    else:
+        Client_Requests.get_all('raw', auth)
 
-        print("Could not connect to host:", Error)
-        exit()
 
-    finally:
-        if response:
-            print(response)
+def start(auth):
+
+    hash_value = input("Enter the hash: ")
+    hash_id = input("Enter the hash id: ")
+
+    Client_Requests.start(auth, hash_value, hash_id)
+
+
+def status(auth):
+
+    hash_value = input("Enter the hash: ")
+    hash_id = input("Enter the hash id: ")
+
+    Client_Requests.get_status(auth, hash_value, hash_id)
+
+
+def stop(auth):
+
+    hash_value = input("Enter the hash: ")
+    hash_id = input("Enter the hash id: ")
+
+    Client_Requests.end(auth, hash_value, hash_id)
+
+
