@@ -1,10 +1,9 @@
 # import flask module
-from flask import Flask, request, jsonify, make_response, send_file
+from flask import Flask, request, make_response, send_file
 from datetime import datetime
 import csv
 import DB_Methods
 import os
-import time
 from JTRWorker import JTRWorker
 
 # create instance of flask application

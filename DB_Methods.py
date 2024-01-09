@@ -19,7 +19,6 @@ def enter_hash(hash_value, hash_type, user_id):
         cursor.execute(query, values)
 
         # Fetch result and print it
-        result = cursor.fetchall()
         db_connection.commit()
         # print('SQL Response is {}'.format(result))
 
@@ -226,3 +225,36 @@ def update_hash_data(field_name, value, hash_id):
             db_connection.close()
 
     return result
+
+
+def new_db():
+
+    db_connection = None
+
+    hash_table_query = '''CREATE TABLE "Hashes" ("ID"	INTEGER NOT NULL UNIQUE,"Hash"	TEXT NOT NULL,"Type"	TEXT NOT NULL,"PlainText"	TEXT,"User_ID"	INTEGER NOT NULL,PRIMARY KEY("ID" AUTOINCREMENT));'''
+
+    users_table_query = '''CREATE TABLE "Users" ("ID"	INTEGER NOT NULL UNIQUE,"UserName"	TEXT NOT NULL UNIQUE,"API_Key"	TEXT NOT NULL,PRIMARY KEY("ID" AUTOINCREMENT));'''
+
+    try:
+
+        # Connect to the DB
+        db_connection = sqlite3.connect('./DB/FlaskApp_DB.db')
+        cursor = db_connection.cursor()
+
+        cursor.execute(hash_table_query)
+
+        cursor.execute(users_table_query)
+
+        db_connection.commit()
+        # print('SQL Response is {}'.format(result))
+
+    # Handle Errors
+    except sqlite3.Error as Error:
+
+        print('Error Occurred -', Error)
+
+    # Close DB
+    finally:
+
+        if db_connection:
+            db_connection.close()
