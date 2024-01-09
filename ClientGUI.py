@@ -7,7 +7,7 @@ from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, END
 
 
 ASSETS_PATH = Path(r"./assets/frame0")
@@ -22,6 +22,14 @@ window = Tk()
 window.geometry("1600x900")
 window.configure(bg="#001910")
 window.title("HashCrack API Client")
+
+
+def write(text):
+
+    entry_1['state'] = 'normal'
+    entry_1.delete('1.0', END)
+    entry_1.insert('1.0', text)
+    entry_1['state'] = 'disabled'
 
 
 canvas = Canvas(

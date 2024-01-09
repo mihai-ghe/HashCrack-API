@@ -1,10 +1,11 @@
 import Client_Requests
+from ClientGUI import entry_1, entry_2, entry_3, entry_4, entry_5, entry_6, entry_7
 
 
 def client_screen():
 
     print("\n")
-    print("----------CRACKSTATION CLIENT----------")
+    print("----------HashCrack API Client----------")
     key = input("Enter your API Key: ")
 
     while True:
@@ -90,5 +91,3 @@ def stop(auth):
     hash_id = input("Enter the hash id: ")
 
     Client_Requests.end(auth, hash_value, hash_id)
-
-
