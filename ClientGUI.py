@@ -7,10 +7,156 @@ from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, END
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, END, Scrollbar
+
+import Client_Requests
 
 
 ASSETS_PATH = Path(r"./assets/frame0")
+
+
+def add_hash():
+
+    auth = entry_2.get()
+    hash_value = entry_3.get()
+    hash_form = entry_5.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    if not hash_value or not hash_form:
+        write("Please enter the hash information!")
+        return
+
+    message = Client_Requests.send_hash(hash_value, hash_form, auth, host)
+
+    write(message)
+
+
+def check_hash():
+
+    auth = entry_2.get()
+    hash_value = entry_3.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    message = Client_Requests.check(hash_value, auth, host)
+    write(message)
+
+
+def get_all_csv():
+
+    auth = entry_2.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    message = Client_Requests.get_all('csv', auth, host)
+    write(message)
+
+
+def get_all_txt():
+
+    auth = entry_2.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    message = Client_Requests.get_all('raw', auth, host)
+
+    write(message)
+
+
+def start():
+
+    auth = entry_2.get()
+    hash_value = entry_4.get()
+    hash_id = entry_7.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    if (not hash_value) and (not hash_id):
+        write("Please enter at least a hash value or a hash id in order to identify the hash you are looking for!")
+        return
+
+    message = Client_Requests.start(auth, host, hash_value, hash_id)
+    write(message)
+
+
+def status():
+
+    auth = entry_2.get()
+    hash_value = entry_4.get()
+    hash_id = entry_7.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    message = Client_Requests.get_status(auth, host, hash_value, hash_id)
+
+    write(message)
+
+
+def stop():
+
+    auth = entry_2.get()
+    hash_value = entry_4.get()
+    hash_id = entry_7.get()
+    host = entry_6.get()
+
+    if not host:
+        write("Please enter a valid URL!")
+        return
+
+    if not auth:
+        write("Please enter an API key!")
+        return
+
+    if (not hash_value) and (not hash_id):
+        write("Please enter at least a hash value or a hash id in order to identify the hash you are looking for!")
+        return
+
+    message = Client_Requests.end(auth, host, hash_value, hash_id)
+
+    write(message)
 
 
 def relative_to_assets(path: str) -> Path:
@@ -43,6 +189,28 @@ canvas = Canvas(
 )
 
 canvas.place(x=0, y=0)
+
+scrollbar_y = Scrollbar(canvas)
+
+scrollbar_y.place(
+    x=974.0,
+    y=8.0,
+    width=10.0,
+    height=534.0
+)
+
+scrollbar_x = Scrollbar(
+    canvas,
+    orient="horizontal"
+)
+
+scrollbar_x.place(
+    x=19.0,
+    y=542.0,
+    width=955.0,
+    height=10.0
+)
+
 entry_image_1 = PhotoImage(
     file=relative_to_assets("entry_1.png"))
 entry_bg_1 = canvas.create_image(
@@ -56,7 +224,10 @@ entry_1 = Text(
     fg="#FFFFFF",
     highlightthickness=0,
     font=("Quicksand Medium", 16 * -1),
-    state="disabled"
+    state="disabled",
+    wrap="none",
+    yscrollcommand=scrollbar_y.set,
+    xscrollcommand=scrollbar_x.set
 )
 entry_1.place(
     x=19.0,
@@ -137,7 +308,7 @@ entry_3.place(
 
 canvas.create_text(
     532.0,
-    618.0,
+    626.0,
     anchor="nw",
     text="Hash",
     fill="#FFFFFF",
@@ -196,19 +367,20 @@ entry_5.place(
 )
 
 canvas.create_text(
-    1207.0,
-    628.0,
+    15.0,
+    625.0,
     anchor="nw",
-    text="Format",
+    text="Host URL",
     fill="#FFFFFF",
     font=("Quicksand Medium", 16 * -1)
 )
 
+
 entry_image_6 = PhotoImage(
     file=relative_to_assets("entry_6.png"))
 entry_bg_6 = canvas.create_image(
-    1307.0,
-    667.754786491394,
+    227.5,
+    665.5,
     image=entry_image_6
 )
 entry_6 = Entry(
@@ -219,10 +391,10 @@ entry_6 = Entry(
     font=("Quicksand Medium", 16 * -1)
 )
 entry_6.place(
-    x=1216.0,
-    y=656.5,
-    width=180.0,
-    height=25.229299545288086
+    x=25.0,
+    y=653.0,
+    width=405.0,
+    height=23.0
 )
 
 button_image_1 = PhotoImage(
@@ -231,7 +403,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=add_hash,
     relief="flat"
 )
 button_1.place(
@@ -265,7 +437,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
+    command=check_hash,
     relief="flat"
 )
 button_2.place(
@@ -281,7 +453,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=get_all_csv,
     relief="flat"
 )
 button_3.place(
@@ -297,7 +469,7 @@ button_4 = Button(
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_4 clicked"),
+    command=status,
     relief="flat"
 )
 button_4.place(
@@ -313,7 +485,7 @@ button_5 = Button(
     image=button_image_5,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_5 clicked"),
+    command=stop,
     relief="flat"
 )
 button_5.place(
@@ -329,7 +501,7 @@ button_6 = Button(
     image=button_image_6,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_6 clicked"),
+    command=start,
     relief="flat"
 )
 button_6.place(
@@ -345,7 +517,7 @@ button_7 = Button(
     image=button_image_7,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_7 clicked"),
+    command=get_all_txt,
     relief="flat"
 )
 button_7.place(
@@ -442,5 +614,7 @@ canvas.create_rectangle(
     600.5,
     fill="#FFFFFF",
     outline="")
+
+
 window.resizable(False, False)
-window.mainloop()
+# window.mainloop()

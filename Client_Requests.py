@@ -2,9 +2,9 @@ import requests
 
 
 # Send hash to DB and start cracking
-def send_hash(value, form, auth):
+def send_hash(value, form, auth, host):
 
-    url = "http://localhost:5000/send"
+    url = host + "/send"
 
     json = {'hash': value, 'format': form}
 
@@ -18,39 +18,19 @@ def send_hash(value, form, auth):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
-        if response:
-            print(response.text)
-
-
-# Get progress of current cracking threads
-def cracking_status():
-
-    url = "http://localhost:5000/status"
-
-    response = None
-
-    try:
-
-        response = requests.get(url)
-
-    except requests.ConnectionError as Error:
-
-        print("Could not connect to host:", Error)
-        exit()
-
-    finally:
-        if response:
-            print(response)
+        if response.status_code == 401:
+            return "Invalid API Authorization Key!"
+        else:
+            return response.text
 
 
 # Check if hash has entry in DB
-def check(value, auth):
+def check(value, auth, host):
 
-    url = "http://localhost:5000/check"
+    url = host + "/check"
 
     params = {'hash':  value}
 
@@ -64,20 +44,19 @@ def check(value, auth):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
         if response.status_code == 401:
-            print("Invalid API Authorization Key")
+            return "Invalid API Authorization Key!"
         else:
-            print(response.text)
+            return response.text
 
 
 # Terminate a cracking thread
-def end(auth, hash_value=None, hash_id=None):
+def end(auth, host, hash_value=None, hash_id=None):
 
-    url = "http://localhost:5000/end"
+    url = host + "/end"
 
     params = None
 
@@ -96,17 +75,18 @@ def end(auth, hash_value=None, hash_id=None):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
-        if response:
-            print(response.text)
+        if response.status_code == 401:
+            return "Invalid API Authorization Key!"
+        else:
+            return response.text
 
 
-def get_all(file_format, auth):
+def get_all(file_format, auth, host):
 
-    url = "http://localhost:5000/all"
+    url = host + "/all"
 
     params = {'format':  file_format}
 
@@ -120,12 +100,11 @@ def get_all(file_format, auth):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
         if response.status_code == 401:
-            print("Invalid API Authorization Key")
+            return "Invalid API Authorization Key!"
         else:
 
             filename = response.headers.get('content-disposition').split('=')[1].replace('\"', '')
@@ -134,10 +113,12 @@ def get_all(file_format, auth):
                 for chunk in response.iter_content():
                     downloaded_file.write(chunk)
 
+            return "Saved file in ./saved_files!"
 
-def start(auth, hash_value=None, hash_id=None):
 
-    url = "http://localhost:5000/start"
+def start(auth, host, hash_value=None, hash_id=None):
+
+    url = host + "/start"
 
     params = None
 
@@ -156,17 +137,18 @@ def start(auth, hash_value=None, hash_id=None):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
-        if response:
-            print(response.text)
+        if response.status_code == 401:
+            return "Invalid API Authorization Key!"
+        else:
+            return response.text
 
 
-def get_status(auth, hash_value=None, hash_id=None):
+def get_status(auth, host, hash_value=None, hash_id=None):
 
-    url = "http://localhost:5000/status"
+    url = host + "/status"
 
     params = None
 
@@ -188,9 +170,10 @@ def get_status(auth, hash_value=None, hash_id=None):
 
     except requests.ConnectionError as Error:
 
-        print("Could not connect to host:", Error)
-        exit()
+        return f"Could not connect to host: {Error}"
 
     finally:
-        if response:
-            print(response.text)
+        if response.status_code == 401:
+            return "Invalid API Authorization Key!"
+        else:
+            return response.text

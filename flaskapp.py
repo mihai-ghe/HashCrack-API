@@ -54,7 +54,7 @@ def send():
 
         json = request.json
         DB_Methods.enter_hash(json['hash'], json['format'], user_data[0][0])
-        response = make_response('Created', 201)
+        response = make_response('Added hash to Database', 201)
 
     response.content_type = 'text/plain'
     return response
