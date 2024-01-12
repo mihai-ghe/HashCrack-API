@@ -138,7 +138,6 @@ def add_user(username, key):
 
         # Fetch result and print it
         result = cursor.fetchall()
-        print('SQL Response is {}'.format(result))
 
     except sqlite3.Error as Error:
 
